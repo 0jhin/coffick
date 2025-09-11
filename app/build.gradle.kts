@@ -59,6 +59,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // 네이버 지도
     implementation("io.github.fornewid:naver-map-compose:1.8.2")
     implementation("io.github.fornewid:naver-map-location:21.0.2")
+
+    // 위치 추적
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 }
