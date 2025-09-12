@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,19 +25,15 @@ import com.example.coffick.model.CafeEntity
 @Composable
 fun MapMenuFloatingScreen(modifier: Modifier = Modifier) {
     val cafeNames by SupabaseManager.cafeStateFlow.collectAsState()
-//    lateinit var cafeList: List<CafeEntity>
 
     LaunchedEffect(Unit) {
         SupabaseManager.fetchAllCafe()
     }
 
-//    LaunchedEffect(Unit) {
-//        cafeList = SupabaseManager.fetchAllCafe()
-//    }
-
-
-    Box(modifier = modifier
+    Box(contentAlignment = Alignment.TopCenter,
+        modifier = modifier
             .fillMaxSize()
+            .padding(top = 32.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -44,7 +41,6 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .height(60.dp)
                 .horizontalScroll(rememberScrollState())
-                .align(alignment = Alignment.BottomCenter)
         ) {
             cafeNames.forEach { it
             CafeListComponent(it.cafeName)}
