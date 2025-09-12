@@ -27,8 +27,9 @@ import androidx.compose.ui.graphics.DefaultCameraDistance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-//import com.example.coffick.manager.SupabaseManager
+import com.example.coffick.manager.SupabaseManager
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.NaverMap
 import com.naver.maps.map.Pickable
 import com.naver.maps.map.Symbol
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -57,9 +58,9 @@ fun MapScreen(modifier: Modifier = Modifier) {
     val locationSource = rememberFusedLocationSource()
     val cameraPositionState = rememberCameraPositionState()
     val markerState = rememberMarkerState()
-//    val allPickers: List<Pickable> = listOf()
-//    val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
-//    val naverMap = NaverMap()
+    val allPickers: List<Pickable> = listOf()
+    val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
+//    val naverMap
 
 
 
@@ -82,15 +83,20 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 isLogoClickEnabled = true,
                 pickTolerance = NaverMapConstants.DefaultPickTolerance,
 
-            )
+                )
         )
     }
 
 
 
-//    val marker = Marker()
-//    marker.position = LatLng(37.5670135, 126.9783740)
-//    marker.map
+    val marker = Marker()
+//    cafeMakers.value.forEach {
+//        marker.position = LatLng(it.y, it.x)
+//        marker.map
+//    }
+    marker.position = LatLng(37.5670135, 126.9783740)
+    marker.map
+
 
     Box(modifier.fillMaxSize().background(Color.White)) {
         NaverMap(
@@ -99,14 +105,8 @@ fun MapScreen(modifier: Modifier = Modifier) {
             locationSource = locationSource,
             cameraPositionState = cameraPositionState,
             onMapDoubleTab = {point, coord ->
-                Toast.makeText(
-                    context,
-                    "${coord.latitude}, ${coord.longitude}",
-                    Toast.LENGTH_SHORT
-                ).show()
                 true
             },
-
         )
     }
 }
