@@ -18,5 +18,6 @@ data class CafeEntity(
     @SerialName("Editor's Picks") val editorPick: Boolean?,
     val isPublic: Boolean?,
     @SerialName("created_at") val createdAt: String?,
-    @SerialName("updated_at") val updatedAt: String?
+    @SerialName("updated_at") val updatedAt: String?,
+    @SerialName("deleted_at") val deletedAt: String?
 )

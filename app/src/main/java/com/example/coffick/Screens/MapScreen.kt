@@ -1,58 +1,34 @@
 package com.example.coffick.Screens
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.PointF
-import android.view.Gravity
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.SnapPosition.Center.position
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultCameraDistance
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import com.example.coffick.R
 import com.example.coffick.manager.SupabaseManager
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.NaverMap
 import com.naver.maps.map.Pickable
-import com.naver.maps.map.Symbol
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
-import com.naver.maps.map.compose.MarkerDefaults
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.NaverMapConstants
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.compose.rememberMarkerState
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.Marker
-import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
-import com.naver.maps.map.widget.ZoomControlView
-
 
 
 @OptIn(ExperimentalNaverMapApi::class)
@@ -94,10 +70,22 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
 
 
+    var markerCafeName by remember { mutableStateOf<String?>(null) }
+    var markerCafeContent by remember { mutableStateOf<String?>(null) }
+    var markerCafeTag by remember { mutableStateOf<Int?>(null) }
+    var markerCafeAddress by remember { mutableStateOf<String?>(null) }
+    var markerCafeIsEditorPick by remember { mutableStateOf<Boolean?>(null) }
+    var markerDetailPopupOpen by remember { mutableStateOf<Boolean>(false) }
 
 
-//    marker.position = LatLng(37.5670135, 126.9783740)
-//    marker.map
+//    var markerCafeName = remember { mutableStateOf<String?>(null) } as String?
+//    var markerCafeContent = remember { mutableStateOf<String?>(null) } as String?
+//    var markerCafeTag = remember { mutableStateOf<Int?>(null) } as Int?
+//    var markerCafeAddress = remember { mutableStateOf<String?>(null) } as String?
+//    var markerCafeIsEditorPick = remember { mutableStateOf<Boolean?>(null) } as Boolean?
+//    var markerDetailPopupOpen by remember { mutableStateOf(false) }
+
+
 
 
     Box(modifier.fillMaxSize().background(Color.White)) {
@@ -110,18 +98,39 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 true
             },
         ) {
-            cafeMakers.value
-                .map {
+            cafeMakers.value.let{it}
+                .map { CafeEntity ->
                     Marker(
-                        state = MarkerState(position = LatLng(it.y?.toDouble() ?: 0.0, it.x?.toDouble() ?: 0.0)),
-                        captionText = it.cafeName,
-                        icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24)
+                        state = MarkerState(position = LatLng(CafeEntity.y?.toDouble() ?: 0.0, CafeEntity.x?.toDouble() ?: 0.0)),
+                        captionText = CafeEntity.cafeName,
+                        icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24),
+                        onClick = {
+                            markerCafeName = CafeEntity.cafeName
+                            markerCafeContent = CafeEntity.content
+                            markerCafeTag = CafeEntity.tag
+                            markerCafeAddress = CafeEntity.address
+                            markerCafeIsEditorPick = CafeEntity.editorPick
+                            markerDetailPopupOpen = true
+                            Log.d("marker", "marker")
+                            true
+                        }
                     )
+
                 }
+
         }
 
-
-
         MapMenuFloatingScreen(modifier = Modifier)
+
+        if (markerDetailPopupOpen) {
+            CafeInfoDetailScreen(
+                name = markerCafeName,
+                oneLine = markerCafeContent,
+                tag = markerCafeTag,
+                address = markerCafeAddress,
+                isEditorPick = markerCafeIsEditorPick ?: false
+            )
+        }
+
     }
 }
