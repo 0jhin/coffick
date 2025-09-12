@@ -26,9 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultCameraDistance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.coffick.R
 import com.example.coffick.manager.SupabaseManager
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.Pickable
 import com.naver.maps.map.Symbol
@@ -37,6 +40,7 @@ import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
+import com.naver.maps.map.compose.MarkerDefaults
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.NaverMapConstants
@@ -46,6 +50,7 @@ import com.naver.maps.map.compose.rememberMarkerState
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.widget.ZoomControlView
 
 
@@ -56,7 +61,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
 
-    val locationSource = rememberFusedLocationSource()
+    val locationSource = rememberFusedLocationSource(isCompassEnabled = true)
     val cameraPositionState = rememberCameraPositionState()
     val markerState = rememberMarkerState()
     val allPickers: List<Pickable> = listOf()
@@ -90,6 +95,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
 
 
+
 //    marker.position = LatLng(37.5670135, 126.9783740)
 //    marker.map
 
@@ -104,10 +110,13 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 true
             },
         ) {
-
             cafeMakers.value
                 .map {
-                    Marker(state = MarkerState(position = LatLng(it.y?.toDouble() ?: 0.0, it.x?.toDouble() ?: 0.0)), captionText = it.cafeName)
+                    Marker(
+                        state = MarkerState(position = LatLng(it.y?.toDouble() ?: 0.0, it.x?.toDouble() ?: 0.0)),
+                        captionText = it.cafeName,
+                        icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24)
+                    )
                 }
         }
 
