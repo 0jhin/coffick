@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.DefaultCameraDistance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.example.coffick.manager.SupabaseManager
+//import com.example.coffick.manager.SupabaseManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.Pickable
 import com.naver.maps.map.Symbol
@@ -42,6 +42,7 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.compose.rememberMarkerState
 import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.widget.ZoomControlView
 
@@ -56,8 +57,9 @@ fun MapScreen(modifier: Modifier = Modifier) {
     val locationSource = rememberFusedLocationSource()
     val cameraPositionState = rememberCameraPositionState()
     val markerState = rememberMarkerState()
-    val allPickers: List<Pickable> = listOf()
-    val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
+//    val allPickers: List<Pickable> = listOf()
+//    val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
+//    val naverMap = NaverMap()
 
 
 
@@ -86,7 +88,9 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
 
 
-
+//    val marker = Marker()
+//    marker.position = LatLng(37.5670135, 126.9783740)
+//    marker.map
 
     Box(modifier.fillMaxSize().background(Color.White)) {
         NaverMap(
