@@ -65,4 +65,11 @@ dependencies {
 
     // 위치 추적
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // supabase
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.2.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+    implementation("io.ktor:ktor-client-android:3.2.2")
 }

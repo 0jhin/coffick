@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.DefaultCameraDistance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.coffick.manager.SupabaseManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.Pickable
 import com.naver.maps.map.Symbol
@@ -43,9 +45,7 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.widget.ZoomControlView
 
-enum class TEST{
-    Follow, Face
-}
+
 
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
@@ -57,35 +57,8 @@ fun MapScreen(modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState()
     val markerState = rememberMarkerState()
     val allPickers: List<Pickable> = listOf()
+    val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
 
-
-
-
-//    val marker = Marker(
-//        state = markerState,
-//        onClick = {overlay ->
-//            Toast.makeText(context, "마커 1 클릭", Toast.LENGTH_SHORT).show()
-//            // 이벤트 소비, OnMapClick 이벤트는 발생하지 않음
-//            false
-//        }
-//    )
-
-
-
-//    naverMap.setOnMapClickListener {
-//        Toast.makeText(this, "지도 클릭", Toast.LENGTH_SHORT).show()
-//    }
-//
-//    naverMap.setOnSymbolClickListener { symbol ->
-//        if (symbol.caption == "서울특별시청") {
-//            Toast.makeText(this, "서울시청 클릭", Toast.LENGTH_SHORT).show()
-//            // 이벤트 소비, OnMapClick 이벤트는 발생하지 않음
-//            true
-//        } else {
-//            // 이벤트 전파, OnMapClick 이벤트가 발생함
-//            false
-//        }
-//    }
 
 
     var mapProperties by remember {
@@ -113,26 +86,14 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
 
 
+
+
     Box(modifier.fillMaxSize().background(Color.White)) {
         NaverMap(
             properties = mapProperties,
             uiSettings = mapUiSettings,
             locationSource = locationSource,
             cameraPositionState = cameraPositionState,
-            onSymbolClick = {symbol ->
-                if (symbol.caption == "서울특별시청") {
-                    Toast.makeText(context, "${symbol.position}", Toast.LENGTH_SHORT).show()
-                    // 이벤트 소비, OnMapClick 이벤트는 발생하지 않음
-                    true
-                } else {
-                    // 이벤트 전파, OnMapClick 이벤트가 발생함
-                    false
-                }
-            },
-            onMapClick = { PointF, LatLng ->
-                Toast.makeText(context, "$LatLng", Toast.LENGTH_SHORT).show()
-
-            },
             onMapDoubleTab = {point, coord ->
                 Toast.makeText(
                     context,
