@@ -37,6 +37,7 @@ import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
+import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.NaverMapConstants
 import com.naver.maps.map.compose.rememberCameraPositionState
@@ -60,7 +61,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
     val markerState = rememberMarkerState()
     val allPickers: List<Pickable> = listOf()
     val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
-//    val naverMap
 
 
 
@@ -89,13 +89,9 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
 
 
-    val marker = Marker()
-//    cafeMakers.value.forEach {
-//        marker.position = LatLng(it.y, it.x)
-//        marker.map
-//    }
-    marker.position = LatLng(37.5670135, 126.9783740)
-    marker.map
+
+//    marker.position = LatLng(37.5670135, 126.9783740)
+//    marker.map
 
 
     Box(modifier.fillMaxSize().background(Color.White)) {
@@ -107,6 +103,16 @@ fun MapScreen(modifier: Modifier = Modifier) {
             onMapDoubleTab = {point, coord ->
                 true
             },
-        )
+        ) {
+
+            cafeMakers.value
+                .map {
+                    Marker(state = MarkerState(position = LatLng(it.y?.toDouble() ?: 0.0, it.x?.toDouble() ?: 0.0)), captionText = it.cafeName)
+                }
+        }
+
+
+
+        MapMenuFloatingScreen(modifier = Modifier)
     }
 }

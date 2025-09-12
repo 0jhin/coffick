@@ -3,14 +3,19 @@ package com.example.coffick.model
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.util.Date
 import kotlin.time.ExperimentalTime
-import java.time.Instant
 
 
 @Serializable
-data class UserEntity @OptIn(ExperimentalTime::class) constructor(
+data class UserEntity constructor(
     val id: String,
     val nickname: String?,
-    @Contextual @SerialName("blocked_at") val blockedAt: Instant?,
+    @SerialName("blocked_at") val blockedAt: String?,
     val blockReason: String
-)
+) {
+//    fun getBlockedAtTime() : Date {
+//        //this.blockedAt.
+//    }
+}
+// yyyy-MM-ddT

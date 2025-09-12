@@ -1,5 +1,8 @@
 package com.example.coffick.manager
 
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import com.example.coffick.model.CafeEntity
 import com.example.coffick.model.UserEntity
 import io.github.jan.supabase.auth.Auth
@@ -17,14 +20,14 @@ object SupabaseManager {
 
     val supabase = createSupabaseClient(
         supabaseUrl = "https://extflbrkrhnmunxppnnh.supabase.co",
-        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dGZsYnJrcmhubXVueHBwbm5oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjI3NDM5NiwiZXhwIjoyMDcxODUwMzk2fQ.Q514gAlrCFT9tAF5i7BxcZf-rbN3zHqg88jPGctQOS8"
-//        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dGZsYnJrcmhubXVueHBwbm5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyNzQzOTYsImV4cCI6MjA3MTg1MDM5Nn0.aXJiJGJ1mx-1gxWJBwsjVydINLsMnifLaejjzyPPRBo"
+        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dGZsYnJrcmhubXVueHBwbm5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyNzQzOTYsImV4cCI6MjA3MTg1MDM5Nn0.aXJiJGJ1mx-1gxWJBwsjVydINLsMnifLaejjzyPPRBo"
     ) {
         install(Auth)
         install(Postgrest)
         //install other modules
-
     }
+
+    // 회원 가입
     @OptIn(DelicateCoroutinesApi::class)
     fun createUsers(emailInput: String, passwordInput: String) {
         GlobalScope.launch {
@@ -35,16 +38,18 @@ object SupabaseManager {
         }
     }
 
+    // 로그인
     @OptIn(DelicateCoroutinesApi::class)
     fun loginUser(emailInput: String, passwordInput: String) {
         GlobalScope.launch {
-            supabase.auth.signInWith(Email, redirectUrl = "https://www.naver.com") {
+            supabase.auth.signInWith(Email) {
                 email = emailInput
                 password = passwordInput
             }
         }
     }
 
+    // 로그 아웃
     @OptIn(DelicateCoroutinesApi::class)
     fun logoutUser() {
         GlobalScope.launch {
@@ -64,7 +69,7 @@ object SupabaseManager {
     suspend fun fetchCafe(id: String): CafeEntity {
         val cafe = supabase.from("cafes").select() {
             filter {
-
+                CafeEntity::id eq id
             }
         }.decodeSingle<CafeEntity>()
         return cafe
@@ -72,9 +77,24 @@ object SupabaseManager {
 
 
     var cafeStateFlow = MutableStateFlow(listOf<CafeEntity>())
-    suspend fun fetchAllCafe() {
-        val cafe = supabase.from("cafes").select() {
-        }.decodeList<CafeEntity>()
+
+
+    @OptIn(DelicateCoroutinesApi::class)
+    suspend fun fetchAllCafe(){
+        val cafe = supabase.from("cafes").select().decodeList<CafeEntity>() // 데이터까지는 정상적으로 받아옴
         cafeStateFlow.emit(cafe)
     }
+
+//    @OptIn(DelicateCoroutinesApi::class)
+//    suspend fun fetchAllCafe(): List<CafeEntity> {
+//        val cafe = supabase.from("cafes").select().decodeList<CafeEntity>() // 데이터까지는 정상적으로 받아옴
+//        cafe.forEach {
+//            Log.d("HJ", "${it.cafeName}")
+//        }
+//        return cafe
+//    }
+
+
+
+
 }
