@@ -78,23 +78,10 @@ object SupabaseManager {
 
     var cafeStateFlow = MutableStateFlow(listOf<CafeEntity>())
 
-
+    // 모든 카페 데이터 가져오기
     @OptIn(DelicateCoroutinesApi::class)
     suspend fun fetchAllCafe(){
         val cafe = supabase.from("cafes").select().decodeList<CafeEntity>() // 데이터까지는 정상적으로 받아옴
         cafeStateFlow.emit(cafe)
     }
-
-//    @OptIn(DelicateCoroutinesApi::class)
-//    suspend fun fetchAllCafe(): List<CafeEntity> {
-//        val cafe = supabase.from("cafes").select().decodeList<CafeEntity>() // 데이터까지는 정상적으로 받아옴
-//        cafe.forEach {
-//            Log.d("HJ", "${it.cafeName}")
-//        }
-//        return cafe
-//    }
-
-
-
-
 }
