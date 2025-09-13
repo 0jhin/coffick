@@ -1,10 +1,8 @@
 package com.example.coffick.manager
 
-import android.util.Log
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import com.example.coffick.model.CafeEntity
 import com.example.coffick.model.UserEntity
+import com.naver.maps.geometry.LatLngBounds
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -79,9 +77,20 @@ object SupabaseManager {
     var cafeStateFlow = MutableStateFlow(listOf<CafeEntity>())
 
     // 모든 카페 데이터 가져오기
+    // 현재 화면의 데이터만 가져오기
     @OptIn(DelicateCoroutinesApi::class)
-    suspend fun fetchAllCafe(){
-        val cafe = supabase.from("cafes").select().decodeList<CafeEntity>() // 데이터까지는 정상적으로 받아옴
+    suspend fun fetchNowScreenCafe(bounds: LatLngBounds?){
+        val cafe = supabase.from("cafes").select {
+            filter {
+                gte("latitude", bounds?.southWest?.latitude ?: 0.0)
+                lte("latitude", bounds?.northEast?.latitude ?: 0.0)
+
+                // 경도 범위 필터링
+                gte("longitude", bounds?.southWest?.longitude ?: 0.0)
+                lte("longitude", bounds?.northEast?.longitude ?: 0.0)
+            }
+        }
+            .decodeList<CafeEntity>() // 데이터까지는 정상적으로 받아옴
         cafeStateFlow.emit(cafe)
     }
 }

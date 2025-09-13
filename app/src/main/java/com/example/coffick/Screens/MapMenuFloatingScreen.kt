@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,31 +21,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.coffick.components.CafeListComponent
+import com.example.coffick.components.LocationSearchButton
 import com.example.coffick.manager.SupabaseManager
 import com.example.coffick.model.CafeEntity
 
 @Composable
-fun MapMenuFloatingScreen(modifier: Modifier = Modifier) {
+fun MapMenuFloatingScreen(modifier: Modifier = Modifier, onClick: () -> Unit) {
     val cafeNames by SupabaseManager.cafeStateFlow.collectAsState()
 
-    LaunchedEffect(Unit) {
-        SupabaseManager.fetchAllCafe()
-    }
-
-    Box(contentAlignment = Alignment.TopCenter,
+    Box(
         modifier = modifier
             .fillMaxSize()
             .padding(top = 32.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .horizontalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(bottom = 40.dp)
         ) {
-            cafeNames.forEach { it
-            CafeListComponent(it.cafeName)}
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .horizontalScroll(rememberScrollState())
+//                    .align(alignment = Alignment.TopCenter)
+            ) {
+                cafeNames.forEach { it
+                    CafeListComponent(it.cafeName)
+                }
+            }
+            LocationSearchButton(
+                onClick,
+                modifier = Modifier
+            )
         }
+
     }
+
 }
