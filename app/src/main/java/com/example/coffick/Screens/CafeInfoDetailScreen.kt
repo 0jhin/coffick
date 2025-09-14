@@ -31,7 +31,7 @@ fun CafeInfoDetailScreen(
     modifier: Modifier = Modifier,
     name: String?,
     oneLine: String?,
-    tag: Int?,
+    tag: String?,
     address: String?,
     isEditorPick: Boolean,
     onClick: () -> Unit

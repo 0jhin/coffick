@@ -9,7 +9,7 @@ import java.time.Instant
 data class CafeEntity(
     val id: Int,
     @SerialName("cafe_name") val cafeName: String?,
-    val tag: Int?,
+    val tag: String?,
     val content: String?,
     @SerialName("image_url") val image: String?,
     val longitude: Double?,

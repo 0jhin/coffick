@@ -1,11 +1,15 @@
 package com.example.coffick.Screens
 
 import android.Manifest
+import android.app.Activity
 import android.location.Location
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresPermission
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,6 +37,8 @@ import com.example.coffick.manager.EventBus
 import com.example.coffick.manager.SupabaseManager
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.Pickable
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -54,14 +62,16 @@ import kotlinx.coroutines.launch
 fun MapScreen(modifier: Modifier = Modifier) {
 
 
+    // 현재 위치 좌표 정보
     val locationSource = rememberFusedLocationSource(isCompassEnabled = true)
 
+    // 현재 화면(카메라) 좌표 정보
     val cameraPositionState = rememberCameraPositionState()
 
     // 마커 찍을 카페(좌표) 정보 받아오기
-    val cafeMakers = SupabaseManager.cafeStateFlow.collectAsState()
+    val cafeList = SupabaseManager.cafeStateFlow.collectAsState()
 
-    // 현재 화면에 대한 좌표 4개
+    // 현재 화면에 대한 좌표
     var nowCoordinate by remember { mutableStateOf(cameraPositionState.coveringBounds) }
 
     // 코루틴 스코프
@@ -70,30 +80,61 @@ fun MapScreen(modifier: Modifier = Modifier) {
     // 스플레시 화면 트리거
     var openSplash by remember { mutableStateOf(false) }
 
+    // 팝업 화면 트리거
+    var markerDetailPopupOpen by remember { mutableStateOf<Boolean>(false) }
+
+    // 선탠 된 태그들
+    val selectedTags = remember { mutableStateListOf<String>() }
+
+
+
+//    val cameraUpdate = CameraUpdate
+//        .toCameraPosition(cameraPositionState.position)
+//        .animate(CameraAnimation.Easing)
+//
+//    cameraPositionState.move(cameraUpdate)
+
     // 앱 시작시 스플레시 화면 시작/종료
     LaunchedEffect(Unit) {
         openSplash = true
+        SupabaseManager.fetchAllCafe()
+        SupabaseManager.fetchTags()
         delay(3000)
         openSplash = false
     }
 
-    //
+//    cameraPositionState.move(cameraUpdate)
+
+
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-    // 위치 권한이 있다고 가정하고 진행
-    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-        if (location != null) {
-            scope.launch {
-                nowCoordinate = cameraPositionState.coveringBounds
-                SupabaseManager.fetchNowScreenCafe(nowCoordinate)
+//    // 위치 권한이 있다고 가정하고 진행
+//    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+//        if (location != null) {
+//            scope.launch {
+//                nowCoordinate = cameraPositionState.coveringBounds
+//                SupabaseManager.fetchNowScreenCafe()
+//            }
+//        }
+//    }
+    var backPressedTime = 0L
+
+    BackHandler(enabled = true) {
+        if (markerDetailPopupOpen) {
+            markerDetailPopupOpen = false
+        } else {
+            if(System.currentTimeMillis() - backPressedTime <= 2000L) {
+                (context as Activity).finish() // 앱 종료
+            } else {
+                Toast.makeText(context, "한 번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
             }
+            backPressedTime = System.currentTimeMillis()
         }
     }
 
-
+    // 지도 화면
     Box(modifier.fillMaxSize().background(Color.White)) {
-
         // 맵 매개변수
         var mapProperties by remember {
             mutableStateOf(
@@ -114,18 +155,16 @@ fun MapScreen(modifier: Modifier = Modifier) {
                     isTiltGesturesEnabled = false,
                     isLogoClickEnabled = true,
                     pickTolerance = NaverMapConstants.DefaultPickTolerance,
-
                     )
             )
         }
 
-        // 마커, 디테일 화면에 들어갈 정보들
+        // 디테일 화면에 들어갈 키페 정보들
         var markerCafeName by remember { mutableStateOf<String?>(null) }
         var markerCafeContent by remember { mutableStateOf<String?>(null) }
-        var markerCafeTag by remember { mutableStateOf<Int?>(null) }
+        var markerCafeTag by remember { mutableStateOf<String?>(null) }
         var markerCafeAddress by remember { mutableStateOf<String?>(null) }
         var markerCafeIsEditorPick by remember { mutableStateOf<Boolean>(false) }
-        var markerDetailPopupOpen by remember { mutableStateOf<Boolean>(false) }
 
         // 지도
         NaverMap(
@@ -137,51 +176,94 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 true
             },
         ) {
-            cafeMakers.value.let{it} // 마커
+            var northEastLatitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.northEast?.latitude ?: 0.0) }
+            var northEastLongitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.northEast?.longitude ?: 0.0) }
+            var southWestLatitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.southWest?.latitude ?: 0.0) }
+            var southWestLongitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.southWest?.longitude ?: 0.0) }
+
+
+
+
+            cafeList.value
                 .map { CafeEntity ->
-                    Marker(
-                        state = MarkerState(position = LatLng(CafeEntity.latitude?.toDouble() ?: 0.0, CafeEntity.longitude?.toDouble() ?: 0.0)),
-                        captionText = CafeEntity.cafeName,
-                        captionColor = Color(0xFF0D0D0D),
-                        iconTintColor = if (CafeEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
-                        icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-                        height = 40.dp,
-                        width = 40.dp,
-                        onClick = {
-                            markerCafeName = CafeEntity.cafeName
-                            markerCafeContent = CafeEntity.content
-                            markerCafeTag = CafeEntity.tag
-                            markerCafeAddress = CafeEntity.address
-                            markerCafeIsEditorPick = CafeEntity.editorPick
-                            markerDetailPopupOpen = true
-                            Log.d("marker", "marker")
-                            true
+                    if (northEastLatitude >= southWestLatitude &&
+                        northEastLongitude >= southWestLongitude)
+                    if (selectedTags.isEmpty()) {
+                        Marker(
+                            state = MarkerState(position = LatLng(CafeEntity.latitude?.toDouble() ?: 0.0, CafeEntity.longitude?.toDouble() ?: 0.0)),
+                            captionText = CafeEntity.cafeName,
+                            captionColor = Color(0xFF0D0D0D),
+                            iconTintColor = if (CafeEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
+                            icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
+                            height = 40.dp,
+                            width = 40.dp,
+                            onClick = {
+                                markerCafeName = CafeEntity.cafeName
+                                markerCafeContent = CafeEntity.content
+                                markerCafeTag = CafeEntity.tag
+                                markerCafeAddress = CafeEntity.address
+                                markerCafeIsEditorPick = CafeEntity.editorPick
+                                markerDetailPopupOpen = true
+                                true
+                            }
+                        )
+                    } else {
+                        if (selectedTags.contains(CafeEntity.tag)) {
+                            Marker(
+                                state = MarkerState(position = LatLng(CafeEntity.latitude?.toDouble() ?: 0.0, CafeEntity.longitude?.toDouble() ?: 0.0)),
+                                captionText = CafeEntity.cafeName,
+                                captionColor = Color(0xFF0D0D0D),
+                                iconTintColor = if (CafeEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
+                                icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
+                                height = 40.dp,
+                                width = 40.dp,
+                                onClick = {
+                                    markerCafeName = CafeEntity.cafeName
+                                    markerCafeContent = CafeEntity.content
+                                    markerCafeTag = CafeEntity.tag
+                                    markerCafeAddress = CafeEntity.address
+                                    markerCafeIsEditorPick = CafeEntity.editorPick
+                                    markerDetailPopupOpen = true
+                                    true
+                                }
+                            )
                         }
-                    )
+                    }
+
                 }
-//            Marker(
-//                state = MarkerState(position = LatLng(nowCoordinate?.southWest?.latitude?.toDouble() ?: 0.0, nowCoordinate?.southWest?.longitude?.toDouble() ?: 0.0)),
-//                captionText = "southWest",
-//                icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-//                height = 40.dp,
-//                width = 40.dp,
-//            )
-//            Marker(
-//                state = MarkerState(position = LatLng(nowCoordinate?.northEast?.latitude?.toDouble() ?: 0.0, nowCoordinate?.northEast?.longitude?.toDouble() ?: 0.0)),
-//                captionText = "southWest",
-//                icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-//                height = 40.dp,
-//                width = 40.dp,
-//            )
         }
+
 
         // 지도 위에 떠있는 고정 된 화면(매뉴들)
         MapMenuFloatingScreen(
             onClick = {
-                nowCoordinate = cameraPositionState.coveringBounds // 현재 위치의 화면 좌표 전달
-                scope.launch {
-                    SupabaseManager.fetchNowScreenCafe(nowCoordinate)
+                when(it) {
+                    CLICK.LOCATION -> {
+                        Log.d("click", "click")
+                    }
+//                    CLICK.TAG -> {
+//                        Log.d("click", "click")
+//                    }
+                    CLICK.CAFE -> {
+                        Log.d("click", "click")
+                    }
+                    CLICK.TRACKING -> {
+                        cameraPositionState.position
+                        Log.d("click", "click")
+                    }
                 }
+//                scope.launch {
+//                    nowCoordinate = cameraPositionState.coveringBounds // 현재 위치의 화면 좌표 전달
+//                    SupabaseManager.fetchNowScreenCafe(nowCoordinate)
+//                }
+            },
+            tagClick = {
+                if (!selectedTags.contains(it.tag)) {
+                    selectedTags.add(it.tag)
+                } else {
+                    selectedTags.remove(it.tag)
+                }
+                Log.d("click", "click")
             },
             modifier = Modifier
         )
@@ -190,12 +272,8 @@ fun MapScreen(modifier: Modifier = Modifier) {
         // Latitude 위도 37.00000 y
         // Longitude 경도 127.0000 x
 
-//        Column(
-//            modifier = Modifier.align(alignment = Alignment.Center).fillMaxWidth()
-//        ){Text("${nowCoordinate?.northWest}", modifier = Modifier)
-//            Text("${nowCoordinate?.southEast}", modifier = Modifier)
-//        }
 
+        Text("선택 된 태그들 $selectedTags")
 
         if (markerDetailPopupOpen) {
             CafeInfoDetailScreen(
@@ -207,13 +285,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 onClick = {markerDetailPopupOpen = false}
             )
         }
-
-//        val state = remember {
-//            MutableTransitionState(false).apply {
-//                // Start the animation immediately.
-//                targetState = true
-//            }
-//        }
 
         AnimatedVisibility(
             visible = openSplash,

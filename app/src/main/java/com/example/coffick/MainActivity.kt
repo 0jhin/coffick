@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.example.coffick.Screens.LocationPermissionRequestScreen
 import com.example.coffick.Screens.MapScreen
 import com.example.coffick.ui.theme.CoffickTheme
 import com.google.android.gms.location.FusedLocationProviderClient
