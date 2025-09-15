@@ -36,19 +36,19 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
     private lateinit var locationSource: FusedLocationSource
     private lateinit var naverMap: NaverMap
 
-//    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 //
 //    // 구글 위치 추적 기능 쓸려고 권한 받아온듯?
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
         // 구글 위치 추적 API인데 네이버 지도에 SDK에 내장되어 있음
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-////
-//        fusedLocationClient.lastLocation
-//            .addOnSuccessListener { location : Location? ->
-////
-//                // Got last known location. In some rare situations this can be null.
-//            }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+//
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location : Location? ->
+//
+                // Got last known location. In some rare situations this can be null.
+            }
 
         super.onCreate(savedInstanceState)
 

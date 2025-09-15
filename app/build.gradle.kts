@@ -73,6 +73,12 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:auth-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.ktor:ktor-client-android:3.2.2")
+    // 이미지 조회
+    implementation("io.github.jan-tennert.supabase:storage-kt")
+
+    // 이미지 선택 라이브러리
+    implementation("com.google.modernstorage:modernstorage-photopicker:1.0.0-alpha06")
+
 
     // 아이콘
 //    implementation("androidx.compose.material:material:1.9.1")

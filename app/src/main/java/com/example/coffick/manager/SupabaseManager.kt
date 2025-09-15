@@ -10,10 +10,15 @@ import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
+import io.github.jan.supabase.storage.upload
+import io.ktor.http.ContentType
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 object SupabaseManager {
 
@@ -23,7 +28,24 @@ object SupabaseManager {
     ) {
         install(Auth)
         install(Postgrest)
+        install(Storage)
         //install other modules
+    }
+
+    suspend fun uploadProfileImg(file: File) : String {
+        val bucket = supabase.storage.from("cafe/카페객체")
+
+        // 고유한 파일명
+        val filename = "카페 이름.jpeg"
+
+        val response = bucket.upload(filename, file) {
+            upsert = false
+            contentType = ContentType.parse("image/jpeg")
+        }
+
+
+
+        return "uploadedImgPath"
     }
 
     // 회원 가입

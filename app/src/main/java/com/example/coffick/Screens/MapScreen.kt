@@ -91,7 +91,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
 //    val cameraUpdate = CameraUpdate
 //        .toCameraPosition(cameraPositionState.position)
 //        .animate(CameraAnimation.Easing)
-//
 //    cameraPositionState.move(cameraUpdate)
 
     // 앱 시작시 스플레시 화면 시작/종료
@@ -103,21 +102,20 @@ fun MapScreen(modifier: Modifier = Modifier) {
         openSplash = false
     }
 
-//    cameraPositionState.move(cameraUpdate)
-
 
     val context = LocalContext.current
+
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-//    // 위치 권한이 있다고 가정하고 진행
-//    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-//        if (location != null) {
-//            scope.launch {
-//                nowCoordinate = cameraPositionState.coveringBounds
-//                SupabaseManager.fetchNowScreenCafe()
-//            }
-//        }
-//    }
+    // 위치 권한이 있다고 가정하고 진행
+    fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+        if (location != null) {
+            scope.launch {
+                nowCoordinate = cameraPositionState.coveringBounds
+                SupabaseManager.fetchAllCafe()
+            }
+        }
+    }
     var backPressedTime = 0L
 
     BackHandler(enabled = true) {
@@ -176,18 +174,19 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 true
             },
         ) {
+
             var northEastLatitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.northEast?.latitude ?: 0.0) }
             var northEastLongitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.northEast?.longitude ?: 0.0) }
             var southWestLatitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.southWest?.latitude ?: 0.0) }
             var southWestLongitude by remember { mutableDoubleStateOf(cameraPositionState.coveringBounds?.southWest?.longitude ?: 0.0) }
 
 
-
-
             cafeList.value
                 .map { CafeEntity ->
                     if (northEastLatitude >= southWestLatitude &&
                         northEastLongitude >= southWestLongitude)
+
+
                     if (selectedTags.isEmpty()) {
                         Marker(
                             state = MarkerState(position = LatLng(CafeEntity.latitude?.toDouble() ?: 0.0, CafeEntity.longitude?.toDouble() ?: 0.0)),
@@ -272,8 +271,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
         // Latitude 위도 37.00000 y
         // Longitude 경도 127.0000 x
 
-
-        Text("선택 된 태그들 $selectedTags")
 
         if (markerDetailPopupOpen) {
             CafeInfoDetailScreen(

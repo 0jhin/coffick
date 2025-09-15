@@ -15,7 +15,7 @@ data class CafeEntity(
     val longitude: Double?,
     val latitude: Double?,
     val address: String?,
-    @SerialName("Editor's Picks") val editorPick: Boolean,
+    @SerialName("EditorPick") val editorPick: Boolean,
     val isPublic: Boolean?,
     @SerialName("created_at") val createdAt: String?,
     @SerialName("updated_at") val updatedAt: String?,
