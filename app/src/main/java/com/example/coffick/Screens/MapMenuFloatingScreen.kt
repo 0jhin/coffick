@@ -37,7 +37,6 @@ import com.example.coffick.components.CafeListComponent
 import com.example.coffick.components.LocationSearchButton
 import com.example.coffick.components.TagUiComponent
 import com.example.coffick.manager.SupabaseManager
-import com.example.coffick.model.CafeEntity
 import com.example.coffick.model.TagEntity
 
 enum class CLICK{
@@ -46,8 +45,12 @@ enum class CLICK{
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapMenuFloatingScreen(modifier: Modifier = Modifier, onClick: (CLICK) -> Unit, tagClick: (TagEntity) -> Unit) {
-    val cafeList by SupabaseManager.cafeStateFlow.collectAsState()
+fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
+                          onClick: (CLICK) -> Unit,
+                          tagClick: (TagEntity) -> Unit,
+                          tagButtonColor: (TagEntity) -> Color
+) {
+    val cafeList by SupabaseManager.cafeTaggingStateFlow.collectAsState()
     val tagList by SupabaseManager.tagStateFlow.collectAsState()
 
     Box(
@@ -62,6 +65,7 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier, onClick: (CLICK) -> Uni
                 .padding(bottom = 40.dp)
         ) {
 
+            // 태그 리스트 버튼
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -74,24 +78,26 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier, onClick: (CLICK) -> Uni
                 tagList.forEach { it
                     TagUiComponent(it.tag,
                         onClick = { tagClick(it) },
+                        buttonColor = tagButtonColor(it)
                     )
                 }
             }
-            Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .horizontalScroll(rememberScrollState())
-//                    .align(alignment = Alignment.TopCenter)
-            ) {
-                cafeList.forEach { it
-                    CafeListComponent(it.cafeName,
-                        onClick = { onClick(CLICK.CAFE) },
-                    )
-                }
-            }
+            // 카페 리스트 버튼
+//            Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.spacedBy(12.dp),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(60.dp)
+//                .horizontalScroll(rememberScrollState())
+////                    .align(alignment = Alignment.TopCenter)
+//            ) {
+//                cafeList.forEach { it
+//                    CafeListComponent(it.cafeName,
+//                        onClick = { onClick(CLICK.CAFE) },
+//                    )
+//                }
+//            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
@@ -101,26 +107,27 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier, onClick: (CLICK) -> Uni
                     .horizontalScroll(rememberScrollState())
 //                    .align(alignment = Alignment.TopCenter)
             ) {
-                LocationSearchButton(
-                    onClick = { onClick(CLICK.LOCATION) },
-                    modifier = Modifier
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.location_searching_24dp_f5f5f5_fill0_wght400_grad0_opsz24),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(44.dp)
-                        .background(Color.White, shape = CircleShape)
-                        .clip(CircleShape)
-                        .clickable(
-                            indication = null, // Disable the ripple effect
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            onClick(CLICK.TRACKING)
-                        }
-                        .clipToBounds()
-                        .padding(8 .dp)
-                )
+//                LocationSearchButton(
+//                    onClick = { onClick(CLICK.LOCATION) },
+//                    modifier = Modifier
+//                )
+                // 현재 위치 버튼
+//                Icon(
+//                    painter = painterResource(id = R.drawable.location_searching_24dp_f5f5f5_fill0_wght400_grad0_opsz24),
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(44.dp)
+//                        .background(Color.White, shape = CircleShape)
+//                        .clip(CircleShape)
+//                        .clickable(
+//                            indication = null, // Disable the ripple effect
+//                            interactionSource = remember { MutableInteractionSource() }
+//                        ) {
+//                            onClick(CLICK.TRACKING)
+//                        }
+//                        .clipToBounds()
+//                        .padding(8 .dp)
+//                )
             }
 
         }

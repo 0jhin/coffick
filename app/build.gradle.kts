@@ -79,6 +79,9 @@ dependencies {
     // 이미지 선택 라이브러리
     implementation("com.google.modernstorage:modernstorage-photopicker:1.0.0-alpha06")
 
+    // glide(이미지 불러오기)
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta07")
+
 
     // 아이콘
 //    implementation("androidx.compose.material:material:1.9.1")

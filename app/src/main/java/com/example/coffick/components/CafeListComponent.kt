@@ -23,20 +23,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TagUiComponent(title: String?, onClick: () -> Unit) {
+fun TagUiComponent(title: String?, onClick: () -> Unit, buttonColor: Color) {
 
-//    val selectedButton = remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .height(32.dp)
-            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(20.dp))
+//            .height(32.dp)
+            .background(buttonColor, shape = RoundedCornerShape(20.dp))
             .border(1.dp, Color(0xFF0D0D0D), shape = RoundedCornerShape(20.dp))
             .clip(shape = RoundedCornerShape(20.dp))
             .clickable(onClick = { onClick() })
             .clipToBounds()
-            .padding(4.dp)
+            .padding(8.dp)
     ) {
         Text(title ?: "",
             maxLines = 1,

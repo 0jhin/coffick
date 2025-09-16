@@ -3,6 +3,7 @@ package com.example.coffick.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,22 +16,32 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.coffick.model.TagEntity
 
 @Composable
-fun TagComponent(tag: Int?) {
-    Column(verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+fun TagUI(tag: String, backgroundColor: Color = Color(0xFF0D0D0D), fontColor: Color = Color(0xFFF5F5F5)) {
+    Box(
         modifier = Modifier
-            .height(32.dp)
-            .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(20.dp))
-            .border(1.dp, Color(0xFF0D0D0D), shape = RoundedCornerShape(20.dp))
-            .clip(shape = RoundedCornerShape(20.dp))
-            .padding(4.dp)
+            .background(color = backgroundColor, shape = RoundedCornerShape(4.dp))
+            .padding(horizontal = 4.dp)
     ) {
-        Text("$tag",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = Color(0xFF0D0D0D)
-        )
+        Text(tag, color = fontColor, fontSize = 12.sp)
+    }
+}
+
+@Composable
+fun TagList(tagList: List<String>, tag: String) {
+    tagList.forEach { _ ->
+        TagUI(tag)
+    }
+}
+
+@Composable
+fun MessageList(messages: List<TagEntity>) {
+    Column {
+        messages.forEach { message ->
+            TagUI("")
+        }
     }
 }

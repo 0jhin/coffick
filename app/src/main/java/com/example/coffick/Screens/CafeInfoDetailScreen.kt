@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,45 +28,55 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import com.google.android.gms.common.wrappers.Wrappers.packageManager
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.example.coffick.components.TagUI
+import com.example.coffick.model.CafeImages
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun CafeInfoDetailScreen(
     modifier: Modifier = Modifier,
     name: String?,
     oneLine: String?,
-    tag: String?,
+    tags: List<String?>,
     address: String?,
     isEditorPick: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    images: List<CafeImages>
 ) {
     val context = LocalContext.current
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(Color.White)
+//            .padding(16.dp)
             .clickable(onClick = {}, enabled = false)
-//            .padding(28.dp)
-            .padding(top = 60.dp)
+            .padding(top = 40.dp)
 
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
         ) {
-            // 닫기 아이콘
-            Box(contentAlignment = Alignment.CenterEnd,
+            Row(horizontalArrangement = Arrangement.End,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .zIndex(1f)
+                    .padding(bottom = 12.dp)
                     .padding(horizontal = 16.dp)
             ) {
+                // 닫기 아이콘
                 Icon(Icons.Default.Clear,
                     contentDescription = "닫기",
                     modifier = Modifier
@@ -76,32 +87,62 @@ fun CafeInfoDetailScreen(
                         )
                         .size(36.dp)
                 )
+                // 닫기 아이콘
             }
-            // 닫기 아이콘
+
 
             // 사진
-            Row(
+
+//            LazyRow(
+//
+//            ) {
+//                item {
+//                    images.forEach { it
+//                        GlideImage(
+//                            model = it.imgUrl,
+//                            contentDescription = null,
+//                            modifier = Modifier
+//                                .clip(shape = RoundedCornerShape(20.dp))
+//                        )
+//                    }
+//                }
+//            }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .background(Color.Yellow)
+                    .height(280.dp)
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 12.dp)
             ) {
-
+                images.forEach { it
+                    GlideImage(
+                        model = it.imgUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(20.dp))
+                    )
+                }
             }
             // 사진
 
             // 글자 정보들
-            Box() {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+//                    .background(Color.Cyan)
+            ) {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
-                        .padding(12.dp)
+//                        .padding(top = 12.dp)
                 ) {
-                    Text(name ?: "", fontSize = 24.sp, fontWeight = Bold) // 카페 이름
+                    Text(name ?: "", fontSize = 24.sp, fontWeight = Bold,
 
-                    Text(oneLine ?: "") // 한 줄 소개
+                    ) // 카페 이름
 
-                    Text(address ?: "") // 주소
+                    Text(oneLine ?: "", fontSize = 16.sp) // 한 줄 소개
+
+                    Text(address ?: "", fontSize = 16.sp) // 주소
 
                     // 에디터 픽이 있으면
                     if (isEditorPick) {
@@ -110,13 +151,7 @@ fun CafeInfoDetailScreen(
                                 .fillMaxWidth()
                         ) {
                             // 에디터 픽을 맨 앞에 고정 배치
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFF0D0D0D), shape = RoundedCornerShape(4.dp))
-                                    .padding(4.dp)
-                            ) {
-                                Text("#에디터 추천", color = Color(0xFFF5F5F5))
-                            }
+                            TagUI("#에디터 추천")
                             // 에디터 픽을 맨 앞에 고정 배치
 
 
@@ -124,15 +159,8 @@ fun CafeInfoDetailScreen(
                                 modifier = Modifier
                                     .horizontalScroll(rememberScrollState())
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .background(
-                                            Color.LightGray,
-                                            shape = RoundedCornerShape(4.dp)
-                                        )
-                                        .padding(4.dp)
-                                ) {
-                                    Text("#$tag", color = Color(0xFF0D0D0D))
+                                tags.forEach {
+                                TagUI("#$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
                                 }
                             }
                         }
@@ -142,13 +170,13 @@ fun CafeInfoDetailScreen(
                     // 에디터 픽이 없으면
                     else {
                         // 에디터 픽 빼고 쭉 배치
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier
-                                .fillMaxWidth()
                                 .horizontalScroll(rememberScrollState())
                         ) {
-                            Text("#$tag")
+                            tags.forEach {
+                                TagUI("#$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
+                            }
                         }
                         // 에디터 픽 빼고 쭉 배치
                     }
@@ -204,8 +232,7 @@ fun CafeInfoDetailScreen(
                 }
             }
             // 글자 정보들
-
-
         }
     }
 }
+
