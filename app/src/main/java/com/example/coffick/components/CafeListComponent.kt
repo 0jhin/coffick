@@ -18,20 +18,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.coffick.Utils.generateRandomRadialGradient
 
 @Composable
-fun TagUiComponent(title: String?, onClick: () -> Unit, buttonColor: Color) {
+fun TagUiComponent(title: String?, onClick: () -> Unit, buttonColor: Color, textColor: Color) {
 
 
     Column(verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
 //            .height(32.dp)
-            .background(buttonColor, shape = RoundedCornerShape(20.dp))
-            .border(1.dp, Color(0xFF0D0D0D), shape = RoundedCornerShape(20.dp))
+            .shadow(
+                elevation = 8.dp, // 그림자 깊이
+                shape = RoundedCornerShape(20.dp), // 그림자 모양
+            )
+            .background(color = buttonColor, shape = RoundedCornerShape(20.dp))
+            .border(1.dp, Color(0xFF0D0D0D).copy(0.3f), shape = RoundedCornerShape(20.dp))
             .clip(shape = RoundedCornerShape(20.dp))
             .clickable(onClick = { onClick() })
             .clipToBounds()
@@ -40,7 +46,7 @@ fun TagUiComponent(title: String?, onClick: () -> Unit, buttonColor: Color) {
         Text(title ?: "",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            color = Color(0xFF0D0D0D)
+            color = textColor
             )
     }
 }

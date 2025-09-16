@@ -48,7 +48,8 @@ enum class CLICK{
 fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
                           onClick: (CLICK) -> Unit,
                           tagClick: (TagEntity) -> Unit,
-                          tagButtonColor: (TagEntity) -> Color
+                          tagButtonColor: (TagEntity) -> Color,
+                          tagTextColor: (TagEntity) -> Color
 ) {
     val cafeList by SupabaseManager.cafeTaggingStateFlow.collectAsState()
     val tagList by SupabaseManager.tagStateFlow.collectAsState()
@@ -59,12 +60,12 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
             .padding(top = 32.dp)
     ) {
         Column(horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.SpaceBetween,
+//            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 40.dp)
+                .padding(bottom = 60.dp)
         ) {
-
+            Spacer(modifier = Modifier.height(20.dp))
             // 태그 리스트 버튼
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -73,12 +74,13 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
                     .fillMaxWidth()
                     .height(60.dp)
                     .horizontalScroll(rememberScrollState())
-//                    .align(alignment = Alignment.TopCenter)
+                    .padding(horizontal = 20.dp)
             ) {
                 tagList.forEach { it
                     TagUiComponent(it.tag,
                         onClick = { tagClick(it) },
-                        buttonColor = tagButtonColor(it)
+                        buttonColor = tagButtonColor(it),
+                        textColor = tagTextColor(it)
                     )
                 }
             }
@@ -129,6 +131,8 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
 //                        .padding(8 .dp)
 //                )
             }
+
+
 
         }
 

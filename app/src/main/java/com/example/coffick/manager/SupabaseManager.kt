@@ -1,11 +1,10 @@
 package com.example.coffick.manager
 
-import android.util.Log
 import com.example.coffick.model.CafeImages
 import com.example.coffick.model.CafeTaggingEntity
 import com.example.coffick.model.TagEntity
 import com.example.coffick.model.UserEntity
-import com.naver.maps.geometry.LatLngBounds
+import com.example.coffick.model.RecommendedMenuEntity
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -14,16 +13,10 @@ import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.Storage
-import io.github.jan.supabase.storage.storage
-import io.github.jan.supabase.storage.upload
-import io.ktor.http.ContentType
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
-import java.io.File
 
 object SupabaseManager {
 
@@ -106,6 +99,17 @@ object SupabaseManager {
             }
         }.decodeList<CafeImages>()
         return imageList
+    }
+
+    // 디테일화면에 띄울 추천 매뉴들
+    // 카페 ID로 매칭
+    suspend fun fetchRecommendedMenu(cafeId: Int) : List<RecommendedMenuEntity>{
+        val menuList = supabase.from("recommend_menu").select(){
+            filter {
+                RecommendedMenuEntity::cafeId eq cafeId
+            }
+        }.decodeList<RecommendedMenuEntity>()
+        return menuList
     }
 
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +43,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.coffick.components.TagUI
 import com.example.coffick.model.CafeImages
+import com.example.coffick.model.RecommendedMenuEntity
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -54,7 +56,8 @@ fun CafeInfoDetailScreen(
     address: String?,
     isEditorPick: Boolean,
     onClick: () -> Unit,
-    images: List<CafeImages>
+    images: List<CafeImages>,
+    menus: List<RecommendedMenuEntity>
 ) {
     val context = LocalContext.current
     Box(
@@ -144,38 +147,39 @@ fun CafeInfoDetailScreen(
 
                     Text(address ?: "", fontSize = 16.sp) // 주소
 
+                    Row {
+                        Text("추천 매뉴 : ", fontSize = 16.sp)
+                        menus.forEach { Text(it.menu) }
+                    }
+
                     // 에디터 픽이 있으면
                     if (isEditorPick) {
-                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        // 에디터 픽을 맨 앞에 고정 배치
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxWidth(),
                         ) {
-                            // 에디터 픽을 맨 앞에 고정 배치
-                            TagUI("#에디터 추천")
-                            // 에디터 픽을 맨 앞에 고정 배치
+                            TagUI("👍에디터 추천")
 
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier
-                                    .horizontalScroll(rememberScrollState())
-                            ) {
-                                tags.forEach {
-                                TagUI("#$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
-                                }
+                            tags.forEach {
+                                TagUI("$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
                             }
                         }
+                        // 에디터 픽을 맨 앞에 고정 배치
                     }
                     // 에디터 픽이 있으면
 
                     // 에디터 픽이 없으면
                     else {
                         // 에디터 픽 빼고 쭉 배치
-                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier
-                                .horizontalScroll(rememberScrollState())
+                                .fillMaxWidth(),
                         ) {
                             tags.forEach {
-                                TagUI("#$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
+                                TagUI("$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
                             }
                         }
                         // 에디터 픽 빼고 쭉 배치

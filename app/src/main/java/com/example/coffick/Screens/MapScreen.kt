@@ -32,6 +32,7 @@ import com.example.coffick.R
 import com.example.coffick.manager.SupabaseManager
 import com.example.coffick.model.CafeImages
 import com.example.coffick.model.CafeTaggingEntity
+import com.example.coffick.model.RecommendedMenuEntity
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
@@ -98,6 +99,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
     var markerCafeTags = remember { mutableStateListOf<String?>() }
     var markerCafeAddress by remember { mutableStateOf<String?>(null) }
     var markerCafeImages: MutableList<CafeImages> = remember { mutableStateListOf() }
+    var markerCafeMenus: MutableList<RecommendedMenuEntity> = remember { mutableStateListOf() }
     var markerCafeIsEditorPick by remember { mutableStateOf<Boolean>(false) }
 
     // 선탠 된 태그들
@@ -113,13 +115,14 @@ fun MapScreen(modifier: Modifier = Modifier) {
         openSplash = false
     }
 
-    fun DetailInfoClear() {
+    fun detailInfoClear() {
         markerDetailPopupOpen = false
         markerCafeName = null
         markerCafeContent = null
         markerCafeTags.clear()
         markerCafeAddress = null
         markerCafeImages.clear()
+        markerCafeMenus.clear()
         markerCafeIsEditorPick = false
     }
 
@@ -128,7 +131,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
     BackHandler(enabled = true) {
         if (markerDetailPopupOpen) {
-            DetailInfoClear()
+            detailInfoClear()
         } else {
             if(System.currentTimeMillis() - backPressedTime <= 2000L) {
                 (context as Activity).finish() // 앱 종료
@@ -194,14 +197,14 @@ fun MapScreen(modifier: Modifier = Modifier) {
                             state = MarkerState(position = LatLng(CafeTaggingEntity.latitude?.toDouble() ?: 0.0, CafeTaggingEntity.longitude?.toDouble() ?: 0.0)),
                             captionText = CafeTaggingEntity.cafeName,
                             captionColor = Color(0xFF0D0D0D),
-                            iconTintColor = Color(0xFF0D0D0D),
-//                            captionHaloColor = Color(0xFF0D0D0D),
-                            icon = if (CafeTaggingEntity.editorPick) OverlayImage.fromResource(R.drawable.coffick_logo_black) else OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-                            height = if (CafeTaggingEntity.editorPick) 48.dp else 32.dp,
-                            width = if (CafeTaggingEntity.editorPick) 48.dp else 32.dp,
+                            iconTintColor = if (CafeTaggingEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
+                            icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
+                            height = 32.dp,
+                            width = 32.dp,
                             onClick = {
                                 scope.launch {
                                     val thisCafeImages = SupabaseManager.fetchCafeImages(CafeTaggingEntity.cafeId)
+                                    val thisCafeMenus = SupabaseManager.fetchRecommendedMenu(CafeTaggingEntity.cafeId)
                                     markerCafeName = CafeTaggingEntity.cafeName
                                     markerCafeContent = CafeTaggingEntity.content
                                     CafeTaggingEntity.tags.forEach { it
@@ -210,6 +213,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
                                     markerCafeAddress = CafeTaggingEntity.address
                                     markerCafeIsEditorPick = CafeTaggingEntity.editorPick
                                     markerCafeImages.addAll(thisCafeImages)
+                                    markerCafeMenus.addAll(thisCafeMenus)
                                     markerDetailPopupOpen = true
                                 }
                                 true
@@ -221,13 +225,14 @@ fun MapScreen(modifier: Modifier = Modifier) {
                                 state = MarkerState(position = LatLng(CafeTaggingEntity.latitude?.toDouble() ?: 0.0, CafeTaggingEntity.longitude?.toDouble() ?: 0.0)),
                                 captionText = CafeTaggingEntity.cafeName,
                                 captionColor = Color(0xFF0D0D0D),
-                                iconTintColor = Color(0xFF0D0D0D),
-                                icon = if (CafeTaggingEntity.editorPick) OverlayImage.fromResource(R.drawable.coffick_logo_black) else OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-                                height = if (CafeTaggingEntity.editorPick) 48.dp else 32.dp,
-                                width = if (CafeTaggingEntity.editorPick) 48.dp else 32.dp,
+                                iconTintColor = if (CafeTaggingEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
+                                icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
+                                height = 32.dp,
+                                width = 32.dp,
                                 onClick = {
                                     scope.launch {
                                         val thisCafeImages = SupabaseManager.fetchCafeImages(CafeTaggingEntity.cafeId)
+                                        val thisCafeMenus = SupabaseManager.fetchRecommendedMenu(CafeTaggingEntity.cafeId)
                                         markerCafeName = CafeTaggingEntity.cafeName
                                         markerCafeContent = CafeTaggingEntity.content
                                         CafeTaggingEntity.tags.forEach { it
@@ -236,6 +241,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
                                         markerCafeAddress = CafeTaggingEntity.address
                                         markerCafeIsEditorPick = CafeTaggingEntity.editorPick
                                         markerCafeImages.addAll(thisCafeImages)
+                                        markerCafeMenus.addAll(thisCafeMenus)
                                         markerDetailPopupOpen = true
                                     }
                                     true
@@ -275,7 +281,10 @@ fun MapScreen(modifier: Modifier = Modifier) {
             },
             modifier = Modifier,
             tagButtonColor = {
-                if (selectedTags.contains(it.tag)) Color.Cyan else Color(0xFFF5F5F5)
+                if (selectedTags.contains(it.tag)) Color(0xFF0D0D0D) else Color(0xFFF5F5F5)
+            },
+            tagTextColor = {
+                if (selectedTags.contains(it.tag)) Color(0xFFF5F5F5) else Color(0xFF0D0D0D)
             }
         )
 
@@ -291,8 +300,9 @@ fun MapScreen(modifier: Modifier = Modifier) {
                 address = markerCafeAddress,
                 isEditorPick = markerCafeIsEditorPick ?: false,
                 images = markerCafeImages,
+                menus = markerCafeMenus,
                 onClick = {
-                    DetailInfoClear()
+                    detailInfoClear()
                 }
             )
         }
