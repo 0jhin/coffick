@@ -5,6 +5,7 @@ import android.app.Activity
 import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresPermission
@@ -16,9 +17,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.coffick.Screens.MapScreen
 import com.example.coffick.ui.theme.CoffickTheme
@@ -60,7 +64,14 @@ class MainActivity : ComponentActivity(), OnMapReadyCallback {
         )
 
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                Color.Transparent.toArgb(), Color.Transparent.toArgb()
+            ),
+//            navigationBarStyle = SystemBarStyle.light(
+//                Color.Transparent.toArgb(), Color.Transparent.toArgb()
+//            )
+        )
         setContent {
             val navController = rememberNavController()
             CoffickTheme {
