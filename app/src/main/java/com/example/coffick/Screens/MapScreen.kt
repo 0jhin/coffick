@@ -95,10 +95,10 @@ fun MapScreen(modifier: Modifier = Modifier) {
     // 디테일 화면에 들어갈 키페 정보들
     var markerCafeName by remember { mutableStateOf<String?>(null) }
     var markerCafeContent by remember { mutableStateOf<String?>(null) }
-    var markerCafeTags = remember { mutableStateListOf<String?>() }
+    val markerCafeTags = remember { mutableStateListOf<String?>() }
     var markerCafeAddress by remember { mutableStateOf<String?>(null) }
-    var markerCafeImages: MutableList<CafeImages> = remember { mutableStateListOf() }
-    var markerCafeMenus: MutableList<RecommendedMenuEntity> = remember { mutableStateListOf() }
+    val markerCafeImages: MutableList<CafeImages> = remember { mutableStateListOf() }
+    val markerCafeMenus: MutableList<RecommendedMenuEntity> = remember { mutableStateListOf() }
     var markerCafeIsEditorPick by remember { mutableStateOf<Boolean>(false) }
 
     // 선탠 된 태그들
@@ -109,6 +109,10 @@ fun MapScreen(modifier: Modifier = Modifier) {
         openSplash = true
         SupabaseManager.fetchTaggingAllCafes()
         SupabaseManager.fetchTags()
+        val firstTag = SupabaseManager.tagStateFlow
+        firstTag.value.firstOrNull()?.let { tagEntity ->
+            selectedTags.add(tagEntity.tag)
+        }
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
                 cameraPositionState.position = CameraPosition(LatLng(location), 16.0)
@@ -197,7 +201,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
             cafeList.value
                 .map { CafeTaggingEntity ->
-                    if (selectedTags.isEmpty()) {
+                    if (selectedTags.any{it in CafeTaggingEntity.tags}) {
                         Marker(
                             state = MarkerState(position = LatLng(CafeTaggingEntity.latitude?.toDouble() ?: 0.0, CafeTaggingEntity.longitude?.toDouble() ?: 0.0)),
                             captionText = CafeTaggingEntity.cafeName,
@@ -224,35 +228,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
                                 true
                             }
                         )
-                    } else {
-                        if (selectedTags.any{it in CafeTaggingEntity.tags}) {
-                            Marker(
-                                state = MarkerState(position = LatLng(CafeTaggingEntity.latitude?.toDouble() ?: 0.0, CafeTaggingEntity.longitude?.toDouble() ?: 0.0)),
-                                captionText = CafeTaggingEntity.cafeName,
-                                captionColor = Color(0xFF0D0D0D),
-                                iconTintColor = if (CafeTaggingEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
-                                icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-                                height = 36.dp,
-                                width = 36.dp,
-                                onClick = {
-                                    scope.launch {
-                                        val thisCafeImages = SupabaseManager.fetchCafeImages(CafeTaggingEntity.cafeId)
-                                        val thisCafeMenus = SupabaseManager.fetchRecommendedMenu(CafeTaggingEntity.cafeId)
-                                        markerCafeName = CafeTaggingEntity.cafeName
-                                        markerCafeContent = CafeTaggingEntity.content
-                                        CafeTaggingEntity.tags.forEach { it
-                                            markerCafeTags.add(it)
-                                        }
-                                        markerCafeAddress = CafeTaggingEntity.address
-                                        markerCafeIsEditorPick = CafeTaggingEntity.editorPick
-                                        markerCafeImages.addAll(thisCafeImages)
-                                        markerCafeMenus.addAll(thisCafeMenus)
-                                        markerDetailPopupOpen = true
-                                    }
-                                    true
-                                }
-                            )
-                        }
                     }
                 }
         }
