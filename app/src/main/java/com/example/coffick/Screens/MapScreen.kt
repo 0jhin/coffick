@@ -12,11 +12,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.example.coffick.R
 import com.example.coffick.manager.SupabaseManager
 import com.example.coffick.model.CafeImages
-import com.example.coffick.model.CafeTaggingEntity
 import com.example.coffick.model.RecommendedMenuEntity
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
@@ -53,7 +47,6 @@ import com.naver.maps.map.compose.NaverMapConstants
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.overlay.OverlayImage
-import io.github.jan.supabase.auth.providers.Zoom
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -268,9 +261,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
             }
         )
 
-
-        // Latitude 위도 37.00000 y
-        // Longitude 경도 127.0000 x
 
         if (markerDetailPopupOpen) {
             CafeInfoDetailScreen(

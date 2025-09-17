@@ -1,10 +1,7 @@
 package com.example.coffick.model
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.Date
-import kotlin.time.ExperimentalTime
 
 
 @Serializable

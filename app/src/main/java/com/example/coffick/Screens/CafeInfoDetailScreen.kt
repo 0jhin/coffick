@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,18 +27,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.coffick.components.TagUI
@@ -84,10 +80,11 @@ fun CafeInfoDetailScreen(
                     contentDescription = "닫기",
                     modifier = Modifier
                         .clickable(
-                            onClick = {
-                                onClick()
-                            }
-                        )
+                            indication = null, // Disable the ripple effect
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            onClick()
+                        }
                         .size(36.dp)
                 )
                 // 닫기 아이콘
@@ -95,21 +92,6 @@ fun CafeInfoDetailScreen(
 
 
             // 사진
-
-//            LazyRow(
-//
-//            ) {
-//                item {
-//                    images.forEach { it
-//                        GlideImage(
-//                            model = it.imgUrl,
-//                            contentDescription = null,
-//                            modifier = Modifier
-//                                .clip(shape = RoundedCornerShape(20.dp))
-//                        )
-//                    }
-//                }
-//            }
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -132,12 +114,10 @@ fun CafeInfoDetailScreen(
             Box(
                 modifier = Modifier
                     .padding(16.dp)
-//                    .background(Color.Cyan)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
-//                        .padding(top = 12.dp)
                 ) {
                     Text(name ?: "", fontSize = 24.sp, fontWeight = Bold,
 

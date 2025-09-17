@@ -1,9 +1,6 @@
 package com.example.coffick.Screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,28 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.coffick.R
-import com.example.coffick.components.CafeListComponent
-import com.example.coffick.components.LocationSearchButton
 import com.example.coffick.components.TagUiComponent
 import com.example.coffick.manager.SupabaseManager
 import com.example.coffick.model.TagEntity
@@ -60,7 +44,6 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
             .padding(top = 32.dp)
     ) {
         Column(horizontalAlignment = Alignment.End,
-//            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = 60.dp)
@@ -84,7 +67,9 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
                     )
                 }
             }
-            // 카페 리스트 버튼
+            // 태그 리스트 버튼
+
+            // 하단 카페 리스트
 //            Row(
 //            verticalAlignment = Alignment.CenterVertically,
 //            horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -100,20 +85,24 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
 //                    )
 //                }
 //            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier
-//                    .fillMaxWidth()
-                    .height(60.dp)
-                    .horizontalScroll(rememberScrollState())
-//                    .align(alignment = Alignment.TopCenter)
-            ) {
+            // 하단 카페 리스트
+
+            // 하단 매뉴들
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.End,
+//                modifier = Modifier
+//                    .height(60.dp)
+//                    .horizontalScroll(rememberScrollState())
+//            ) {
+//                // 현재 위치에서 검색 버튼
 //                LocationSearchButton(
 //                    onClick = { onClick(CLICK.LOCATION) },
 //                    modifier = Modifier
 //                )
-                // 현재 위치 버튼
+//                // 현재 위치에서 검색 버튼
+//
+//                // 현재 위치 버튼
 //                Icon(
 //                    painter = painterResource(id = R.drawable.location_searching_24dp_f5f5f5_fill0_wght400_grad0_opsz24),
 //                    contentDescription = null,
@@ -130,12 +119,9 @@ fun MapMenuFloatingScreen(modifier: Modifier = Modifier,
 //                        .clipToBounds()
 //                        .padding(8 .dp)
 //                )
-            }
-
-
-
+//                // 현재 위치 버튼
+//            }
+            // 하단 매뉴들
         }
-
     }
-
 }
