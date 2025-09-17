@@ -204,8 +204,8 @@ fun MapScreen(modifier: Modifier = Modifier) {
                             captionColor = Color(0xFF0D0D0D),
                             iconTintColor = if (CafeTaggingEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
                             icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-                            height = 32.dp,
-                            width = 32.dp,
+                            height = 36.dp,
+                            width = 36.dp,
                             onClick = {
                                 scope.launch {
                                     val thisCafeImages = SupabaseManager.fetchCafeImages(CafeTaggingEntity.cafeId)
@@ -232,8 +232,8 @@ fun MapScreen(modifier: Modifier = Modifier) {
                                 captionColor = Color(0xFF0D0D0D),
                                 iconTintColor = if (CafeTaggingEntity.editorPick) Color.Red else Color(0xFF0D0D0D),
                                 icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24), // 에디터 픽은 앱 아이콘으로
-                                height = 32.dp,
-                                width = 32.dp,
+                                height = 36.dp,
+                                width = 36.dp,
                                 onClick = {
                                     scope.launch {
                                         val thisCafeImages = SupabaseManager.fetchCafeImages(CafeTaggingEntity.cafeId)
