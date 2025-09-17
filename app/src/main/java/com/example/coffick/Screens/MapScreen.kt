@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -88,10 +89,10 @@ fun MapScreen(modifier: Modifier = Modifier) {
     // 디테일 화면에 들어갈 키페 정보들
     var markerCafeName by remember { mutableStateOf<String?>(null) }
     var markerCafeContent by remember { mutableStateOf<String?>(null) }
-    val markerCafeTags = remember { mutableStateListOf<String?>() }
+    val markerCafeTags = remember { mutableStateSetOf<String?>() }
     var markerCafeAddress by remember { mutableStateOf<String?>(null) }
-    val markerCafeImages: MutableList<CafeImages> = remember { mutableStateListOf() }
-    val markerCafeMenus: MutableList<RecommendedMenuEntity> = remember { mutableStateListOf() }
+    val markerCafeImages: MutableSet<CafeImages> = remember { mutableStateSetOf() }
+    val markerCafeMenus: MutableSet<RecommendedMenuEntity> = remember { mutableStateSetOf() }
     var markerCafeIsEditorPick by remember { mutableStateOf<Boolean>(false) }
 
     // 선탠 된 태그들

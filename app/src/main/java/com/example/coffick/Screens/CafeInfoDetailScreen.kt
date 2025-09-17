@@ -48,12 +48,12 @@ fun CafeInfoDetailScreen(
     modifier: Modifier = Modifier,
     name: String?,
     oneLine: String?,
-    tags: List<String?>,
+    tags: Set<String?>,
     address: String?,
     isEditorPick: Boolean,
     onClick: () -> Unit,
-    images: List<CafeImages>,
-    menus: List<RecommendedMenuEntity>
+    images: Set<CafeImages>,
+    menus: Set<RecommendedMenuEntity>
 ) {
     val context = LocalContext.current
     Box(
