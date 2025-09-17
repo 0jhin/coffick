@@ -12,8 +12,11 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,11 +75,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
     val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
-    fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
-        if (location != null) {
-            cameraPositionState.position = CameraPosition(LatLng(location), 16.0)
-        }
-    }
+
 
     // 마커 찍을 카페(좌표) 정보 받아오기
     val cafeList = SupabaseManager.cafeTaggingStateFlow.collectAsState()
@@ -105,15 +104,21 @@ fun MapScreen(modifier: Modifier = Modifier) {
     // 선탠 된 태그들
     val selectedTags = remember { mutableStateListOf<String>() }
 
-
     // 앱 시작시 스플레시 화면 시작/종료
     LaunchedEffect(Unit) {
         openSplash = true
         SupabaseManager.fetchTaggingAllCafes()
         SupabaseManager.fetchTags()
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                cameraPositionState.position = CameraPosition(LatLng(location), 16.0)
+            }
+        }
         delay(3000)
         openSplash = false
     }
+
+//    cameraPositionState.position.target
 
     fun detailInfoClear() {
         markerDetailPopupOpen = false
