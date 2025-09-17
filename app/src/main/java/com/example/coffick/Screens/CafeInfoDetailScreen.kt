@@ -148,7 +148,7 @@ fun CafeInfoDetailScreen(
                     Text(address ?: "", fontSize = 16.sp) // 주소
 
                     Row {
-                        Text("추천 매뉴 : ", fontSize = 16.sp)
+                        Text("추천 메뉴 : ", fontSize = 16.sp)
                         menus.forEach { Text(it.menu) }
                     }
 
