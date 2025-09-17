@@ -109,7 +109,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
         }
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
-                cameraPositionState.position = CameraPosition(LatLng(location), 16.0)
+                cameraPositionState.position = CameraPosition(LatLng(location), 15.0)
             }
         }
         delay(3000)
