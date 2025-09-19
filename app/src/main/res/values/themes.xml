@@ -2,4 +2,5 @@
 <resources>
 
     <style name="Theme.Coffick" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Coffick.AppCompat" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>

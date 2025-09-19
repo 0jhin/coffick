@@ -28,7 +28,7 @@
             android:screenOrientation="portrait"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Coffick">
+            android:theme="@style/Theme.Coffick.AppCompat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
