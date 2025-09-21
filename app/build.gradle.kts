@@ -6,15 +6,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.coffick"
+    namespace = "com.yj.coffick"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.coffick"
+        applicationId = "com.yj.coffick"
         minSdk = 27
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -81,6 +81,18 @@ dependencies {
 
     // glide(이미지 불러오기)
     implementation("com.github.bumptech.glide:compose:1.0.0-beta07")
+
+    //Retrofit(API 라이브러리)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    // view model
+    val lifecycle_version = "2.5.1"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    // ViewModel utilities for Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
 
 
     // 아이콘
