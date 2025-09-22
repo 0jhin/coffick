@@ -36,7 +36,7 @@ interface SearchService {
     suspend fun searchCafe(
         @Query("x") x: String,
         @Query("y") y: String,
-        @Query("radius") radius: Int = 200,
+        @Query("radius") radius: Int = 2000,
         @Query("category_group_code") category_group_code: String = "CE7",
         @Query("query") query: String,
         @Query("size") size: Int = 15,

@@ -127,44 +127,6 @@ fun CafeInfoDetailScreen(
 
                     Text(address ?: "", fontSize = 16.sp) // 주소
 
-                    Row {
-                        Text("추천 메뉴 : ", fontSize = 16.sp)
-                        menus.forEach { Text(it.menu) }
-                    }
-
-                    // 에디터 픽이 있으면
-                    if (isEditorPick) {
-                        // 에디터 픽을 맨 앞에 고정 배치
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        ) {
-                            TagUI("👍에디터 추천")
-
-                            tags.forEach {
-                                TagUI("$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
-                            }
-                        }
-                        // 에디터 픽을 맨 앞에 고정 배치
-                    }
-                    // 에디터 픽이 있으면
-
-                    // 에디터 픽이 없으면
-                    else {
-                        // 에디터 픽 빼고 쭉 배치
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                        ) {
-                            tags.forEach {
-                                TagUI("$it", backgroundColor = Color.LightGray, fontColor = Color(0xFF0D0D0D))
-                            }
-                        }
-                        // 에디터 픽 빼고 쭉 배치
-                    }
-                    // 에디터 픽이 없으면
 
 
 

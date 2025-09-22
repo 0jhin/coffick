@@ -213,20 +213,12 @@ fun MapScreen(modifier: Modifier = Modifier,
                         height = 36.dp,
                         width = 36.dp,
                         onClick = {
-//                                scope.launch {
-//                                    val thisCafeImages = SupabaseManager.fetchCafeImages(CafeTaggingEntity.cafeId)
-//                                    val thisCafeMenus = SupabaseManager.fetchRecommendedMenu(CafeTaggingEntity.cafeId)
-//                                    markerCafeName = CafeTaggingEntity.cafeName
-//                                    markerCafeContent = CafeTaggingEntity.content
-//                                    CafeTaggingEntity.tags.forEach { it
-//                                        markerCafeTags.add(it)
-//                                    }
-//                                    markerCafeAddress = CafeTaggingEntity.address
-//                                    markerCafeIsEditorPick = CafeTaggingEntity.editorPick
-//                                    markerCafeImages.addAll(thisCafeImages)
-//                                    markerCafeMenus.addAll(thisCafeMenus)
-//                                    markerDetailPopupOpen = true
-//                                }
+                                scope.launch {
+                                    markerCafeName = SearchCafeList.place_name
+                                    markerCafeContent = SearchCafeList.category_name
+                                    markerCafeAddress = SearchCafeList.road_address_name
+                                    markerDetailPopupOpen = true
+                                }
                                 true
                             }
                     )
@@ -266,7 +258,6 @@ fun MapScreen(modifier: Modifier = Modifier,
                 if (selectedTag == it.tag) Color(0xFFF5F5F5) else Color(0xFF0D0D0D)
             }
         )
-//        Text(cameraPositionState.position.target.toString(), modifier = Modifier.align(alignment = Alignment.Center))
 
 
         if (markerDetailPopupOpen) {
