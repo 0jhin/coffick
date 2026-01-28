@@ -7,7 +7,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -30,7 +33,6 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
-
 @Composable
 fun CoffickTheme(
     darkTheme: Boolean = false,
@@ -39,6 +41,8 @@ fun CoffickTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val currentDensity = LocalDensity.current
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -48,10 +52,17 @@ fun CoffickTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+// 시스템의 fontScale을 무시하고 1f(기본값)로 고정된 새로운 Density 객체를 생성합니다.
+    CompositionLocalProvider(
+        LocalDensity provides Density(
+            density = currentDensity.density,
+            fontScale = 1f // 이 부분이 핵심입니다.
+        )
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

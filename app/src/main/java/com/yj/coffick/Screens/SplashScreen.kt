@@ -9,11 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion.ExtraBold
 import androidx.compose.ui.unit.sp
+import com.yj.coffick.ui.theme.NotoSansKR
 
 @Composable
 fun SplashScreen() {
@@ -23,14 +22,13 @@ fun SplashScreen() {
             .background(Color(0xFF0D0D0D))
             .clickable(onClick = {}, enabled = false)
     ) {
-        Text("쉽고 빠른 카페 검색",
+        Text(
+            text = "쉽고 빠른 카페 검색",
             fontSize = 40.sp,
-            fontWeight = ExtraBold,
             color = Color(0xFFF5F5F5),
-            style = TextStyle(
-                fontWeight = FontWeight.ExtraBold,
-                fontStyle = FontStyle.Italic
-            )
+            fontFamily = NotoSansKR, // 정의한 패밀리 지정
+            fontWeight = FontWeight.ExtraBold, // notosans_extra_bold 연결
+            fontStyle = FontStyle.Italic // italic 파일 연결 -> 결과적으로 extra_bold_italic 파일 사용됨
         )
     }
 }
