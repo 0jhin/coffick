@@ -3,11 +3,10 @@ package com.yj.coffick.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yj.coffick.manager.RetrofitManager
+import com.yj.coffick.common.services.RetrofitService
 import com.yj.coffick.model.SearchCafeList
 import com.yj.coffick.model.SearchResponse
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class LocationSearchViewModel: ViewModel() {
@@ -34,7 +33,7 @@ class LocationSearchViewModel: ViewModel() {
 
     fun search(longitude: String, latitude: String, term: String){
         viewModelScope.launch {
-            val response : SearchResponse = RetrofitManager.searchService.searchCafe(x = longitude, y = latitude, query = term)
+            val response : SearchResponse = RetrofitService.searchService.searchCafe(x = longitude, y = latitude, query = term)
             Log.d("[서버응답]", "RandomUserScreen: ${response}")
             searchItemList.value = response.documents
         }

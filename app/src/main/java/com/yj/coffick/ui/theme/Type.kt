@@ -8,6 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.yj.coffick.R
 
+// 폰트
 val NotoSansKR = FontFamily(
     Font(R.font.notosans_kr_font_family)
 )
