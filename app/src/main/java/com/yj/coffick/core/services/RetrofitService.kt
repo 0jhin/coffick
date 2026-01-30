@@ -1,6 +1,6 @@
-package com.yj.coffick.common.services
+package com.yj.coffick.core.services
 
-import com.yj.coffick.model.SearchResponse
+import com.yj.coffick.core.domain.entities.SearchResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET

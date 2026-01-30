@@ -1,0 +1,9 @@
+# 메인 컬러
+블랙
+0xFF1A1A1A
+0xFF2C2C2C
+0xFF222222
+0xFF0D0D0D - 이거
+
+화이트
+0xFFF5F5F5

@@ -1,4 +1,4 @@
-package com.yj.coffick.model
+package com.yj.coffick.core.domain.entities
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

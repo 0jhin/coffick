@@ -1,4 +1,4 @@
-package com.yj.coffick.features.splash.presentation.screen
+package com.yj.coffick.features.splash.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

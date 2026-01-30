@@ -1,4 +1,4 @@
-package com.yj.coffick.screens
+package com.yj.coffick.features.detail.presentation
 
 import android.content.Intent
 import android.content.pm.ResolveInfo
@@ -59,14 +59,16 @@ fun CafeInfoDetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Row(horizontalArrangement = Arrangement.End,
+            Row(
+                horizontalArrangement = Arrangement.End,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp)
                     .padding(horizontal = 16.dp)
             ) {
                 // 닫기 아이콘
-                Icon(Icons.Default.Clear,
+                Icon(
+                    Icons.Default.Clear,
                     contentDescription = "닫기",
                     modifier = Modifier
                         .clickable(
@@ -119,9 +121,6 @@ fun CafeInfoDetailScreen(
                     Text(address ?: "", fontSize = 16.sp) // 주소
 
 
-
-
-
                     Spacer(modifier = Modifier.weight(1f))
                     // 길찾기 버튼
                     Button(
@@ -137,23 +136,23 @@ fun CafeInfoDetailScreen(
 //                            <queries>
 //                              <package android:name="com.nhn.android.nmap"/>
 //                            </queries>
-                                val list:MutableList<ResolveInfo?> =
-                                    context.packageManager.queryIntentActivities(
-                                        intent,
-                                        0
-                                    )
+                            val list: MutableList<ResolveInfo?> =
+                                context.packageManager.queryIntentActivities(
+                                    intent,
+                                    0
+                                )
 
-                                // 설치가 안되어있으면 플레이스토어로 이동
-                                if (list.isEmpty()) {
-                                    context.startActivity(
-                                        Intent(
-                                            Intent.ACTION_VIEW,
-                                            "market://details?id=com.nhn.android.nmap".toUri()
-                                        )
+                            // 설치가 안되어있으면 플레이스토어로 이동
+                            if (list.isEmpty()) {
+                                context.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        "market://details?id=com.nhn.android.nmap".toUri()
                                     )
-                                } else { // 설치가 되어 있으면 네이버 지도 실행
-                                    context.startActivity(intent)
-                                }
+                                )
+                            } else { // 설치가 되어 있으면 네이버 지도 실행
+                                context.startActivity(intent)
+                            }
 
 
                         },

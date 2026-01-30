@@ -1,4 +1,4 @@
-package com.yj.coffick.screens
+package com.yj.coffick.features.map.presentation.screens
 
 import android.Manifest
 import android.app.Activity
@@ -26,12 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.yj.coffick.R
 import com.google.android.gms.location.LocationServices
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.LocationSource
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
@@ -41,14 +41,16 @@ import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.NaverMapConstants
 import com.naver.maps.map.compose.rememberCameraPositionState
-import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.overlay.OverlayImage
-import com.yj.coffick.common.services.SupabaseService
-import com.yj.coffick.features.splash.presentation.screen.SplashScreen
-
-import com.yj.coffick.model.CafeImages
-import com.yj.coffick.model.RecommendedMenuEntity
-import com.yj.coffick.viewmodel.LocationSearchViewModel
+import com.yj.coffick.R
+import com.yj.coffick.core.domain.entities.CafeImages
+import com.yj.coffick.core.domain.entities.RecommendedMenuEntity
+import com.yj.coffick.core.services.SupabaseService
+import com.yj.coffick.features.detail.presentation.CafeInfoDetailScreen
+import com.yj.coffick.features.map.presentation.components.ClickEvent
+import com.yj.coffick.features.map.presentation.components.MapFloatingMenus
+import com.yj.coffick.features.map.presentation.viewmodels.CafeMapViewModel
+import com.yj.coffick.features.splash.presentation.screens.SplashScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -56,26 +58,23 @@ import kotlinx.coroutines.launch
 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
-fun MapScreen(modifier: Modifier = Modifier,
-              viewModel: LocationSearchViewModel = viewModel()) {
+fun CafeMapScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CafeMapViewModel = viewModel(),
+    locationSource: LocationSource? = null
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
     val context = LocalContext.current
 
-    // 현재 위치 좌표 정보
-    val locationSource = rememberFusedLocationSource(isCompassEnabled = true)
+    // 코루틴 스코프
+    val scope = rememberCoroutineScope()
 
     // 현재 화면(카메라) 좌표 정보
     val cameraPositionState = rememberCameraPositionState()
 
+    // 마지막 위치 가져오기
     val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-
-
-
-    // 마커 찍을 카페 정보 받아오기
-    val cafeList = viewModel.searchItemList.collectAsState()
-
-    // 코루틴 스코프
-    val scope = rememberCoroutineScope()
 
     // 스플레시 화면 트리거
     var openSplash by remember { mutableStateOf(false) }
@@ -90,10 +89,7 @@ fun MapScreen(modifier: Modifier = Modifier,
     var markerCafeAddress by remember { mutableStateOf<String?>(null) }
     val markerCafeImages: MutableSet<CafeImages> = remember { mutableStateSetOf() }
     val markerCafeMenus: MutableSet<RecommendedMenuEntity> = remember { mutableStateSetOf() }
-//    var markerCafeIsEditorPick by remember { mutableStateOf<Boolean>(false) }
 
-    // 선탠 된 태그
-    var selectedTag by remember { mutableStateOf("") }
 
     // 앱 시작시 스플레시 화면 시작/종료
     LaunchedEffect(Unit) {
@@ -101,19 +97,21 @@ fun MapScreen(modifier: Modifier = Modifier,
         SupabaseService.fetchTags() // 태그들 불러오기
         val firstTag = SupabaseService.tagStateFlow
         firstTag.value.firstOrNull()?.let {
-            selectedTag = it.tag
+            viewModel.selectedTag(it.tag)
         }
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
                 cameraPositionState.position = CameraPosition(LatLng(location), 15.0)
-                viewModel.search(longitude = location.longitude.toString(), latitude = location.latitude.toString(), term = selectedTag) // 맨첨에 카페 정보 끌어오기
+                viewModel.search(
+                    longitude = location.longitude.toString(),
+                    latitude = location.latitude.toString(),
+                ) // 마지막 위치 카페 불러오기
             }
         }
         delay(3000)
         openSplash = false // 스플레시 종료
     }
 
-//    cameraPositionState.position.target
 
     fun detailInfoClear() {
         markerDetailPopupOpen = false
@@ -123,7 +121,6 @@ fun MapScreen(modifier: Modifier = Modifier,
         markerCafeAddress = null
         markerCafeImages.clear()
         markerCafeMenus.clear()
-//        markerCafeIsEditorPick = false
     }
 
     // 뒤로가기
@@ -133,7 +130,7 @@ fun MapScreen(modifier: Modifier = Modifier,
         if (markerDetailPopupOpen) {
             detailInfoClear()
         } else {
-            if(System.currentTimeMillis() - backPressedTime <= 2000L) {
+            if (System.currentTimeMillis() - backPressedTime <= 2000L) {
                 (context as Activity).finish() // 앱 종료
             } else {
                 Toast.makeText(context, "한 번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
@@ -141,11 +138,14 @@ fun MapScreen(modifier: Modifier = Modifier,
             backPressedTime = System.currentTimeMillis()
         }
     }
-    // 뒤로가기
 
     // 지도 화면
-    Box(modifier.fillMaxSize().background(Color.White)) {
-        // 맵 매개변수
+    Box(
+        modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        // 지도 옵션
         var mapProperties by remember {
             mutableStateOf(
                 MapProperties(
@@ -155,7 +155,7 @@ fun MapScreen(modifier: Modifier = Modifier,
                 ),
             )
         }
-        // 맵 매개변수
+        // 지도 화면 설정
         var mapUiSettings by remember {
             mutableStateOf(
                 MapUiSettings(
@@ -166,7 +166,7 @@ fun MapScreen(modifier: Modifier = Modifier,
                     pickTolerance = NaverMapConstants.DefaultPickTolerance,
                     isZoomGesturesEnabled = true,
                     isCompassEnabled = false
-                    )
+                )
             )
         }
 
@@ -181,66 +181,70 @@ fun MapScreen(modifier: Modifier = Modifier,
             },
             onMapDoubleTab = { _, _ ->
                 scope.launch {
-                cameraPositionState.animate(update = CameraUpdate.zoomIn(), animation =  CameraAnimation.Easing)
+                    cameraPositionState.animate(
+                        update = CameraUpdate.zoomIn(),
+                        animation = CameraAnimation.Easing
+                    )
                 }
                 true
             }
         ) {
-
-            cafeList.value
+            uiState.searchCafeList
                 .map { searchCafeList ->
                     Marker(
-                        state = MarkerState(position = LatLng(searchCafeList.y.toDouble(), searchCafeList.x.toDouble())),
+                        state = MarkerState(
+                            position = LatLng(
+                                searchCafeList.y.toDouble(),
+                                searchCafeList.x.toDouble()
+                            )
+                        ),
                         captionText = searchCafeList.place_name,
                         captionColor = Color(0xFF0D0D0D),
-                        iconTintColor =  Color(0xFF0D0D0D),
+                        iconTintColor = Color(0xFF0D0D0D),
                         icon = OverlayImage.fromResource(R.drawable.baseline_location_on_24),
                         height = 36.dp,
                         width = 36.dp,
                         onClick = {
-                                scope.launch {
-                                    markerCafeName = searchCafeList.place_name
-                                    markerCafeContent = searchCafeList.category_name
-                                    markerCafeAddress = searchCafeList.road_address_name
-                                    markerDetailPopupOpen = true
-                                }
-                                true
+                            scope.launch {
+                                markerCafeName = searchCafeList.place_name
+                                markerCafeContent = searchCafeList.category_name
+                                markerCafeAddress = searchCafeList.road_address_name
+                                markerDetailPopupOpen = true
                             }
+                            true
+                        }
                     )
                 }
         }
 
 
-
         // 지도 위에 떠있는 고정 된 화면(매뉴들)
-        MapMenuFloatingScreen(
-            onClick = {
-                when(it) {
-                    CLICK.CAFE -> {
-
+        MapFloatingMenus(
+            onClick = { event ->
+                when (event) {
+                    is ClickEvent.Research -> {
+                        viewModel.search(
+                            longitude = cameraPositionState.position.target.longitude.toString(),
+                            latitude = cameraPositionState.position.target.latitude.toString(),
+                        )
                     }
-                    CLICK.LOCATION -> {
-                        viewModel.search(longitude = cameraPositionState.position.target.longitude.toString(), latitude = cameraPositionState.position.target.latitude.toString(), term = selectedTag)
-                    }
-                    CLICK.TRACKING -> {
 
+                    is ClickEvent.Tag -> {
+                        val clickedTag = event.entity
+                        viewModel.selectedTag(clickedTag = clickedTag.tag)
+                        viewModel.search(
+                            longitude = cameraPositionState.position.target.longitude.toString(),
+                            latitude = cameraPositionState.position.target.latitude.toString(),
+                        )
                     }
                 }
             },
-            tagClick = {
-                    if (selectedTag != it.tag) {
-                        selectedTag = it.tag
-                    } else {
-                        selectedTag = ""
-                    }
-                viewModel.search(longitude = cameraPositionState.position.target.longitude.toString(), latitude = cameraPositionState.position.target.latitude.toString(), term = selectedTag)
-            },
             modifier = Modifier,
             tagButtonColor = {
-                if (selectedTag == it.tag) Color(0xFF0D0D0D) else Color(0xFFF5F5F5)
+                if (uiState.selectedTag == it.tag) Color(0xFF0D0D0D) else Color(0xFFF5F5F5)
             },
             tagTextColor = {
-                if (selectedTag == it.tag) Color(0xFFF5F5F5) else Color(0xFF0D0D0D)
+                if (uiState.selectedTag == it.tag) Color(0xFFF5F5F5) else Color(0xFF0D0D0D)
             }
         )
 
@@ -269,3 +273,11 @@ fun MapScreen(modifier: Modifier = Modifier,
         }
     }
 }
+
+//@Preview
+//@Composable
+//fun MapScreenPreview() {
+//    CoffickTheme {
+//        CafeMapScreen()
+//    }
+//}

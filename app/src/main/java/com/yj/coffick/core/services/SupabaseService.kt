@@ -1,9 +1,9 @@
-package com.yj.coffick.common.services
+package com.yj.coffick.core.services
 
-import com.yj.coffick.model.CafeImages
-import com.yj.coffick.model.RecommendedMenuEntity
-import com.yj.coffick.model.TagEntity
-import com.yj.coffick.model.UserEntity
+import com.yj.coffick.core.domain.entities.CafeImages
+import com.yj.coffick.core.domain.entities.RecommendedMenuEntity
+import com.yj.coffick.core.domain.entities.TagEntity
+import com.yj.coffick.core.domain.entities.UserEntity
 import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
